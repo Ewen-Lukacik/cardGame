@@ -1,21 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
-
-    //object definition for card
-    function Card(name, value){
-         this.name = name;
-         this.value = value;
-    }
-
-    //shuffle cards, param : array of cards
-    function shuffleCards(cardArray) {
-        return cardArray
-            .map(value => ({ value, sort: Math.random() }))
-            .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value);
-    }
     
+    /******************* INSTANCIATIONS ******************* */
     //basic set of 52
     const cards = [
+        { name: "Minus One", value: -1 },
+        { name: "Minus Two", value: -2 },
+        { name: "Minus Three", value: -3 },
+        { name: "Minus Four", value: -4 },
+
         { name: "Ace of Diamonds", value: 14 },
         { name: "King of Diamonds", value: 13 },
         { name: "Queen of Diamonds", value: 12 },
@@ -73,34 +65,87 @@ document.addEventListener("DOMContentLoaded", function () {
         { name: "2 of Clubs", value: 2 }
     ];
     
-
     //first shuffle
     let shuffledCards = shuffleCards(cards);
 
     //instantiate draw cards
     let drawCards = [];
 
-    //test of creating a div via js
-    const div = document.createElement('div');
-    div.style.backgroundColor = 'black';
-    div.style.width = "100px";
-    div.style.height = "100px";
-    document.body.appendChild(div);
-
-
     //get elements
     const submitBtn = document.querySelector(".submit");
     const drawBtn = document.querySelector(".draw");
-    const winnerText = document.querySelector('.winner');
-    const firstCardPickedText = document.querySelector('.firstCardPicked');
-    const secondCardPickedText = document.querySelector('.secondCardPicked');
+    const restartBtn = document.querySelector(".restartBtn");
+    
+    //get inputs
+    const nameInput = document.querySelector('.name');
+    const valueInput = document.querySelector('.value');
 
-    //create new card from inputs
+    //get player related stuff
+    const playerOneZone = document.querySelector('.playerOneZone');
+    const playerOnePick = document.querySelector('.playerOnePick');
+
+    const playerTwoZone = document.querySelector('.playerTwoZone');
+    const playerTwoPick = document.querySelector('.playerTwoPick');
+  
+    //set colors
+    const winnerColor = "rgb(111, 236, 174)";
+    const looserColor = "rgb(237, 121, 121)";
+    const baseColor = "lightblue";
+
+    /******************  FUNCTIONS ************************ */
+    /**
+     * Card object definition
+     * @param {string} name 
+     * @param {int} value 
+     */
+    function Card(name, value){
+            this.name = name;
+            this.value = value;
+    }
+
+    /**
+     * @param {Array} cardArray 
+     * @returns a shuffled version of the input array
+     */
+    function shuffleCards(cardArray) {
+        const shuffledCardArray = cardArray
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+
+        return shuffledCardArray
+    }
+
+    /**
+     * clear inputs when submitted
+     * @param {HTMLElement} input 
+     */
+    function clearInput(input){
+        input.value = "";
+    }
+
+    /**
+     * clear text from HTML element
+     * @param {HTMLElement} element 
+     */
+    function clearText(element){
+        element.textContent = "";
+    }
+
+    /**
+     * add event on element
+     * @param {HTMLElement} element 
+     * @param {EventListener} eventType 
+     * @param {Function} eventFunction 
+     */
+    function addEvent(element, eventType, eventFunction){
+        element.addEventListener(eventType, eventFunction);
+    }
+
+    /**
+     * Add a new card based on input values
+     */
     function createCardFromInput(){
-        //get inputs
-        const nameInput = document.querySelector('.name');
-        const valueInput = document.querySelector('.value');
-
         //read inputs values
         const name = nameInput.value;
         const value = valueInput.value;
@@ -112,80 +157,66 @@ document.addEventListener("DOMContentLoaded", function () {
         //clear input values
         clearInput(nameInput);
         clearInput(valueInput); 
-
-        console.log('hello there', cards);
     }
 
-    //clear inputs when submitted
-    function clearInput(input){
-        input.value = "";
-    }
-
-
-    //draw cards
+    /**
+     * Draw a card for each zone
+     * Call the Compare method when needed
+     */
     function drawCard(){
         const drawed = shuffledCards.pop();
-        if(drawCards.length == 0){
-            firstCardPickedText.textContent = drawed.name;
-        }
+        
+        switch(drawCards.length){
+            case 0:
+                playerOnePick.textContent = drawed.name;
+                drawCards.push(drawed);
 
-        else if(drawCards.length == 1){
-            secondCardPickedText.textContent = drawed.name;
-        }
+                break;
+            case 1:
+                playerTwoPick.textContent = drawed.name;
+                drawCards.push(drawed);
 
-        drawCards.push(drawed);
-
-        if(drawCards.length == 2){
-          compareCards();
+                //call to compare now as the array will now be of the right length
+                compareCards();
+                break;
         }
-        console.log(drawCards.length);
     }
 
-    //compare cards and display winner
+    /**
+     * Compare cards and display winner
+     */
     function compareCards(){
-        const firstCardName = drawCards[0].name;
         const firstCardValue = drawCards[0].value;
-
-        const secondCardName = drawCards[1].name;
         const secondCardValue = drawCards[1].value;
 
-        if(firstCardValue < secondCardValue){
-            winnerText.textContent = secondCardName + " won";
-            console.log(secondCardName + " won");
-            getDrawCardsBackToMainPack();
-            
+        //if playerOne wins
+        if(firstCardValue > secondCardValue){
+            playerOneZone.style.backgroundColor = winnerColor;
+            playerTwoZone.style.backgroundColor = looserColor;  
         }
-        else if(firstCardValue > secondCardValue){
-
-            winnerText.textContent = firstCardName + " won";
-            getDrawCardsBackToMainPack();
-            console.log(firstCardName + " won");
-            
-        }
-        else if(firstCardValue == secondCardValue){
-            winnerText.textContent = "Draw !";
-            console.log("egalité");
-            getDrawCardsBackToMainPack();
-            
-        }
-
-        console.log(cards, drawCards);
-        
+        //if playerTwo wins
+        else if(firstCardValue < secondCardValue){
+            playerOneZone.style.backgroundColor = looserColor;
+            playerTwoZone.style.backgroundColor = winnerColor;
+        } 
     }
 
-
-    //reset arrays and reshuffle
-    function getDrawCardsBackToMainPack(){
-        shuffledCards.push(...drawCards);
+    /**
+     * Reset everything and reshuffle
+     */
+    function restartGame(){
+        playerOneZone.style.backgroundColor = baseColor;
+        playerTwoZone.style.backgroundColor = baseColor;
+        clearText(playerOnePick);
+        clearText(playerTwoPick);
         drawCards = [];
 
-        shuffledCards = shuffleCards(shuffledCards);
+        //shuffle the main pack again (user could have added some cards in it)
+        shuffledCards = shuffleCards(cards);
+
     }
 
-
-    submitBtn.addEventListener("click", createCardFromInput);
-    drawBtn.addEventListener("click", drawCard);
-
-
+    addEvent(submitBtn, "click", createCardFromInput);
+    addEvent(drawBtn, "click", drawCard);
+    addEvent(restartBtn, "click", restartGame);
 });
-
