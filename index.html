@@ -7,6 +7,33 @@
     <script src="./index.js"></script>
 </head>
 <body>
+    <style>
+        .drawZone{
+            margin-top: 3rem;
+        }
+        .drawZone, .restart{
+            display: flex;
+            place-content: center;
+            gap: 1rem;
+        }
+        .playerContainer{
+            display: flex;
+            flex-direction: row;
+            gap: 5rem
+        }
+        .playerZone{
+            min-height: 4rem;
+            height: auto;
+            width: 20%;
+            margin: auto;
+            padding: 3rem;
+            text-align: center;
+            outline: 1px solid black;
+            background-color: lightblue;
+        }
+    </style>
+
+
     <h1> CARD GAME EXERCISE</h1>
     <h2>Create new card :</h2>
     <input type="text" class="name" placeholder="Name of card">
@@ -17,14 +44,33 @@
 
     <br>
 
-    Draw and compare cards :
-    <button class="draw">
-        Draw Card
-    </button>
+    <div class="drawZone">
+        Draw and compare cards :
+        
+        <button class="draw">
+            Draw Card
+        </button>
+    </div>
 
-    <p class="firstCardPicked"></p>
-    <p class="secondCardPicked"></p>
-    <p class="winner"></p>
+    <section class="playerContainer">
+        
+        <div class="playerZone playerOneZone">
+            <p class="playerOnePick"></p>
+        </div>
+
+
+        <div class="playerZone playerTwoZone">
+    
+            <p class="playerTwoPick"></p>
+        </div>
+    </section>
+
+
+    <div class="restart">
+        <button class="restartBtn">
+            Restart Game
+        </button>
+    </div>
 
 </body>
 </html>
