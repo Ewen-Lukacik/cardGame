@@ -164,6 +164,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 compareCards();
                 break;
         }
+        });   
+        getLeaderboard(players);
     }
 
     /**
@@ -185,6 +187,46 @@ document.addEventListener("DOMContentLoaded", function () {
                 break;
         }
     }
+
+    /**
+     * get all player scores
+     */
+    function getLeaderboard(players){
+        //reorder the players array by their scores (closest to 0 wins)  
+        const sortedPlayersScore = players.sort((a, b) => {
+            const absScoreA = Math.abs(a.score);
+            const absScoreB = Math.abs(b.score);
+            
+            if (absScoreA !== absScoreB) {
+                return absScoreA - absScoreB;
+            }
+    
+            //if equel distance from 0, positive wins
+            if (a.score > 0 && b.score < 0) {
+                return -1;
+            }
+            if (a.score < 0 && b.score > 0) {
+                return 1;
+            }
+            
+            //if equal distance from 0 AND same sign, then lowest cards win
+            const aMinCardValue = Math.min(...a.drawnCards.map(card => Math.abs(card)));
+            const bMinCardValue = Math.min(...b.drawnCards.map(card => Math.abs(card)));
+            
+            return aMinCardValue - bMinCardValue;
+        });
+        
+        const firstPlacePlayer = sortedPlayersScore[0].name;
+        const secondPlacePlayer = sortedPlayersScore[1].name;
+        const thirdPlacePlayer = sortedPlayersScore[2].name;
+
+        //get their boxes paint in their lb color
+        document.querySelector('.' + firstPlacePlayer + "-zone").style.backgroundColor = firstPlaceColor;
+        document.querySelector('.' + secondPlacePlayer + "-zone").style.backgroundColor = secondPlaceColor;
+        document.querySelector('.' + thirdPlacePlayer + "-zone").style.backgroundColor = thirdPlaceColor;
+
+    }
+
 
     /**
      * Reset everything and reshuffle
