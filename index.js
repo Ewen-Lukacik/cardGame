@@ -38,21 +38,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const maxDrawnCards = 2;
 
     //get elements
-    const submitBtn = document.querySelector(".submit");
     const addPlayerBtn = document.querySelector(".addPlayer");
     const drawBtn = document.querySelector(".draw");
     const restartBtn = document.querySelector(".restartBtn");
     
-    //get inputs
-    const nameInput = document.querySelector('.name');
-    const valueInput = document.querySelector('.value');
-
     const playerContainer = document.querySelector('.playerContainer');
 
     //set colors
-    const winnerColor = "rgb(111, 236, 174)";
-    const looserColor = "rgb(237, 121, 121)";
-    const baseColor = "lightblue";
+    const firstPlaceColor = "#f8ce00";
+    const secondPlaceColor = "#d8d8d8";
+    const thirdPlaceColor = "#cd7f32";
 
     /******************  FUNCTIONS ************************ */
 
@@ -95,13 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
         element.addEventListener(eventType, eventFunction);
     }
 
-    //get player related stuff
-    const playerOneZone = document.querySelector('.playerOneZone');
-    const playerOneFirstPick = document.querySelector('.playerOneFirstPick');
-    const playerOneSecondPick = document.querySelector('.playerOneSecondPick');
-    const playerOneScore = document.querySelector('.playerOneScore');
-    let playerOneDrawnCards = [];
-
     /**
      * Add a new player to the game
      */
@@ -122,19 +110,22 @@ document.addEventListener("DOMContentLoaded", function () {
         } 
     }
 
-    function createNewPlayerZone(currentPlayer){
+    function createNewPlayerZone(player){
         const newPlayerZone = document.createElement('div');
-        newPlayerZone.classList.add("playerZone",  currentPlayer.name+"-zone");
+        newPlayerZone.classList.add("playerZone",  player.name+"-zone");
 
         const playerTitle = document.createElement('h2');
-        playerTitle.textContent = currentPlayer.name;
+        playerTitle.textContent = player.name;
 
         const playerFirstPick = document.createElement('p');
-        playerFirstPick.classList.add(currentPlayer.name+"-firstPick");
+        playerFirstPick.classList.add(player.name+"-firstPick");
         const playerSecondPick = document.createElement('p');
-        playerSecondPick.classList.add(currentPlayer.name+"-secondPick");
+        playerSecondPick.classList.add(player.name+"-secondPick");
 
-        newPlayerZone.append(playerTitle, playerFirstPick, playerSecondPick);
+        const playerScore = document.createElement('span');
+        playerScore.classList.add(player.name + "-score");
+
+        newPlayerZone.append(playerTitle, playerFirstPick, playerSecondPick, playerScore);
 
         playerContainer.appendChild(newPlayerZone);
     }
@@ -144,26 +135,26 @@ document.addEventListener("DOMContentLoaded", function () {
      * Call the Compare method when needed
      */
     function drawCard(){
-        if(playerOneDrawnCards.length == 2){
-            restartGame();
-        }
-        
-        switch(playerOneDrawnCards.length){
-            case 0:
-                const positiveDrawn = shuffledPositiveCards.pop();
-                playerOneFirstPick.textContent = positiveDrawn.name;
-                playerOneDrawnCards.push(positiveDrawn);
-                //callback
-                drawCard();
-                break;
-            case 1:
-                const negativeDrawn = shuffledNegativeCards.pop();
-                playerOneSecondPick.textContent = negativeDrawn.name;
-                playerOneDrawnCards.push(negativeDrawn);
-                //call to compare now as the array will now be of the right length
-                compareCards();
-                break;
-        }
+
+        players.forEach(player => {
+            const firstPickTextElement = document.querySelector("." + player.name + "-firstPick")
+            const secondPickTextElement = document.querySelector("." + player.name + "-secondPick")
+            switch(player.drawnCards.length){
+                case 0:
+                    const positiveDrawn = shuffledPositiveCards.pop();
+                    firstPickTextElement.textContent = positiveDrawn.name;
+                    player.drawnCards.push(positiveDrawn);
+                    //callback
+                    drawCard();
+                    break;
+                case 1:
+                    const negativeDrawn = shuffledNegativeCards.pop();
+                    secondPickTextElement.textContent = negativeDrawn.name;
+                    player.drawnCards.push(negativeDrawn);
+                    //call to compare now as the array will now be of the right length
+                    compareCards(player);
+                    break;
+            }
         });   
         getLeaderboard(players);
     }
@@ -171,19 +162,20 @@ document.addEventListener("DOMContentLoaded", function () {
     /**
      * Compare cards and display winner
      */
-    function compareCards(){
-        const firstCardValue = playerOneDrawnCards[0].value;
-        const secondCardValue = playerOneDrawnCards[1].value;
-
+    function compareCards(player){
+        const firstCardValue = player.drawnCards[0].value;
+        const secondCardValue = player.drawnCards[1].value;
         const totalValue = firstCardValue + secondCardValue;
+
+        const playerScoreTextElement = document.querySelector("." + player.name + "-score");
         switch(totalValue){
             case 0:
-                console.log(totalValue);
-                playerOneScore.textContent = "Sabacc !";
+                player.score = totalValue;
+                playerScoreTextElement.textContent = "Sabacc !";
                 break;
             default: 
-                console.log("not sabacc", totalValue);
-                playerOneScore.textContent = "Your score : " + totalValue
+                player.score = totalValue;
+                playerScoreTextElement.textContent = "Your score : " + totalValue
                 break;
         }
     }
