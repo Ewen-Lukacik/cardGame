@@ -11,15 +11,20 @@
         .drawZone{
             margin-top: 3rem;
         }
-        .drawZone, .restart{
+        .warning{
+            color: red;
+            text-transform: uppercase;
+        }
+        .drawZone, .restart, .warning{
             display: flex;
             place-content: center;
             gap: 1rem;
         }
         .playerContainer{
-            display: flex;
-            flex-direction: row;
-            gap: 5rem
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto;
+            gap: 3rem;
         }
         .playerZone{
             min-height: 4rem;
@@ -31,20 +36,17 @@
             outline: 1px solid black;
             background-color: lightblue;
         }
+        
     </style>
 
 
     <h1> CARD GAME EXERCISE</h1>
-    <h2>Create new card :</h2>
-    <input type="text" class="name" placeholder="Name of card">
-    <input type="number" class="value" placeholder="Value of card">
-    <button class="submit">
-        submit
-    </button>
-
+    
     <br>
 
     <div class="drawZone">
+        <button class="addPlayer">Add Player </button>
+        <br>
         Draw and compare cards :
         
         <button class="draw">
@@ -52,18 +54,9 @@
         </button>
     </div>
 
-    <section class="playerContainer">
-        
-        <div class="playerZone playerOneZone">
-            <p class="playerOnePick"></p>
-        </div>
+    <span class="warning"></span>
+    <section class="playerContainer"></section>
 
-
-        <div class="playerZone playerTwoZone">
-    
-            <p class="playerTwoPick"></p>
-        </div>
-    </section>
 
 
     <div class="restart">

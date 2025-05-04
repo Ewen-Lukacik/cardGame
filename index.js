@@ -35,11 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let shuffledPositiveCards = shuffleCards(positiveCards);
     let shuffledNegativeCards = shuffleCards(negativeCards);
 
-    //instantiate draw cards
-    let drawCards = [];
+    const maxDrawnCards = 2;
 
     //get elements
     const submitBtn = document.querySelector(".submit");
+    const addPlayerBtn = document.querySelector(".addPlayer");
     const drawBtn = document.querySelector(".draw");
     const restartBtn = document.querySelector(".restartBtn");
     
@@ -47,28 +47,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const nameInput = document.querySelector('.name');
     const valueInput = document.querySelector('.value');
 
-    //get player related stuff
-    const playerOneZone = document.querySelector('.playerOneZone');
-    const playerOnePick = document.querySelector('.playerOnePick');
+    const playerContainer = document.querySelector('.playerContainer');
 
-    const playerTwoZone = document.querySelector('.playerTwoZone');
-    const playerTwoPick = document.querySelector('.playerTwoPick');
-  
     //set colors
     const winnerColor = "rgb(111, 236, 174)";
     const looserColor = "rgb(237, 121, 121)";
     const baseColor = "lightblue";
 
     /******************  FUNCTIONS ************************ */
-    /**
-     * Card object definition
-     * @param {string} name 
-     * @param {int} value 
-     */
-    function Card(name, value){
-            this.name = name;
-            this.value = value;
-    }
 
     /**
      * @param {Array} cardArray 
@@ -109,21 +95,48 @@ document.addEventListener("DOMContentLoaded", function () {
         element.addEventListener(eventType, eventFunction);
     }
 
+    //get player related stuff
+    const playerOneZone = document.querySelector('.playerOneZone');
+    const playerOneFirstPick = document.querySelector('.playerOneFirstPick');
+    const playerOneSecondPick = document.querySelector('.playerOneSecondPick');
+    const playerOneScore = document.querySelector('.playerOneScore');
+    let playerOneDrawnCards = [];
+
     /**
-     * Add a new card based on input values
+     * Add a new player to the game
      */
-    function createCardFromInput(){
-        //read inputs values
-        const name = nameInput.value;
-        const value = valueInput.value;
+    function addPlayer(){
+        if(players.length < 4){
+            const newPlayerName = "player" + (players.length + 1);
+            const newPlayer = {
+                name: newPlayerName, 
+                score: 0, 
+                drawnCards: []
+            };
+            players.push(newPlayer);
+            createNewPlayerZone(newPlayer);
 
-        //creating and pushing the newlu created card into the array
-        const card = new Card(name, value);
-        cards.push(card);
+            if(players.length + 1 > 4){
+                addPlayerBtn.setAttribute('disabled', true);
+            }
+        } 
+    }
 
-        //clear input values
-        clearInput(nameInput);
-        clearInput(valueInput); 
+    function createNewPlayerZone(currentPlayer){
+        const newPlayerZone = document.createElement('div');
+        newPlayerZone.classList.add("playerZone",  currentPlayer.name+"-zone");
+
+        const playerTitle = document.createElement('h2');
+        playerTitle.textContent = currentPlayer.name;
+
+        const playerFirstPick = document.createElement('p');
+        playerFirstPick.classList.add(currentPlayer.name+"-firstPick");
+        const playerSecondPick = document.createElement('p');
+        playerSecondPick.classList.add(currentPlayer.name+"-secondPick");
+
+        newPlayerZone.append(playerTitle, playerFirstPick, playerSecondPick);
+
+        playerContainer.appendChild(newPlayerZone);
     }
 
     /**
@@ -177,19 +190,16 @@ document.addEventListener("DOMContentLoaded", function () {
      * Reset everything and reshuffle
      */
     function restartGame(){
-        playerOneZone.style.backgroundColor = baseColor;
-        playerTwoZone.style.backgroundColor = baseColor;
-        clearText(playerOnePick);
-        clearText(playerTwoPick);
-        drawCards = [];
-
         //shuffle the main pack again (user could have added some cards in it)
         shuffledPositiveCards = shuffleCards(positiveCards);
         shuffledNegativeCards = shuffleCards(negativeCards);
 
-    }
+        playerContainer.innerHTML = "";
+        players = [];
+        addPlayerBtn.removeAttribute('disabled');
+        }
 
-    addEvent(submitBtn, "click", createCardFromInput);
+    addEvent(addPlayerBtn, "click", addPlayer);
     addEvent(drawBtn, "click", drawCard);
     addEvent(restartBtn, "click", restartGame);
 });
