@@ -207,16 +207,19 @@ document.addEventListener("DOMContentLoaded", function () {
             
             return aMinCardValue - bMinCardValue;
         });
-        
-        const firstPlacePlayer = sortedPlayersScore[0].name;
-        const secondPlacePlayer = sortedPlayersScore[1].name;
-        const thirdPlacePlayer = sortedPlayersScore[2].name;
 
         //get their boxes paint in their lb color
-        document.querySelector('.' + firstPlacePlayer + "-zone").style.backgroundColor = firstPlaceColor;
-        document.querySelector('.' + secondPlacePlayer + "-zone").style.backgroundColor = secondPlaceColor;
-        document.querySelector('.' + thirdPlacePlayer + "-zone").style.backgroundColor = thirdPlaceColor;
-
+        if (players.length > 0) {
+            document.querySelector('.' + sortedPlayersScore[0].name + "-zone").style.backgroundColor = firstPlaceColor;
+        }
+        
+        if (players.length > 1) {
+            document.querySelector('.' + sortedPlayersScore[1].name + "-zone").style.backgroundColor = secondPlaceColor;
+        }
+        
+        if (players.length > 2) {
+            document.querySelector('.' + sortedPlayersScore[2].name + "-zone").style.backgroundColor = thirdPlaceColor;
+        }
     }
 
 
