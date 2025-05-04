@@ -2,71 +2,38 @@ document.addEventListener("DOMContentLoaded", function () {
     
     /******************* INSTANCIATIONS ******************* */
     //basic set of 52
-    const cards = [
+    const positiveCards = [
+        { name: "One", value: 1 },
+        { name: "Two", value: 2 },
+        { name: "Three", value: 3 },
+        { name: "Four", value: 4 },
+        { name: "Five", value: 5 },
+        { name: "Six", value: 6 },
+        { name: "Seven", value: 7 },
+        { name: "Eight", value: 8 },
+        { name: "Nine", value: 9 },
+        { name: "Ten", value: 10 },
+    ];
+
+    const negativeCards = [
         { name: "Minus One", value: -1 },
         { name: "Minus Two", value: -2 },
         { name: "Minus Three", value: -3 },
         { name: "Minus Four", value: -4 },
+        { name: "Minus Five", value: -5 },
+        { name: "Minus Six", value: -6 },
+        { name: "Minus Seven", value: -7 },
+        { name: "Minus Eight", value: -8 },
+        { name: "Minus Nine", value: -9 },
+        { name: "Minus Ten", value: -10 },
+    ]
 
-        { name: "Ace of Diamonds", value: 14 },
-        { name: "King of Diamonds", value: 13 },
-        { name: "Queen of Diamonds", value: 12 },
-        { name: "Jack of Diamonds", value: 11 },
-        { name: "10 of Diamonds", value: 10 },
-        { name: "9 of Diamonds", value: 9 },
-        { name: "8 of Diamonds", value: 8 },
-        { name: "7 of Diamonds", value: 7 },
-        { name: "6 of Diamonds", value: 6 },
-        { name: "5 of Diamonds", value: 5 },
-        { name: "4 of Diamonds", value: 4 },
-        { name: "3 of Diamonds", value: 3 },
-        { name: "2 of Diamonds", value: 2 },
-        
-        { name: "Ace of Hearts", value: 14 },
-        { name: "King of Hearts", value: 13 },
-        { name: "Queen of Hearts", value: 12 },
-        { name: "Jack of Hearts", value: 11 },
-        { name: "10 of Hearts", value: 10 },
-        { name: "9 of Hearts", value: 9 },
-        { name: "8 of Hearts", value: 8 },
-        { name: "7 of Hearts", value: 7 },
-        { name: "6 of Hearts", value: 6 },
-        { name: "5 of Hearts", value: 5 },
-        { name: "4 of Hearts", value: 4 },
-        { name: "3 of Hearts", value: 3 },
-        { name: "2 of Hearts", value: 2 },
-        
-        { name: "Ace of Spades", value: 14 },
-        { name: "King of Spades", value: 13 },
-        { name: "Queen of Spades", value: 12 },
-        { name: "Jack of Spades", value: 11 },
-        { name: "10 of Spades", value: 10 },
-        { name: "9 of Spades", value: 9 },
-        { name: "8 of Spades", value: 8 },
-        { name: "7 of Spades", value: 7 },
-        { name: "6 of Spades", value: 6 },
-        { name: "5 of Spades", value: 5 },
-        { name: "4 of Spades", value: 4 },
-        { name: "3 of Spades", value: 3 },
-        { name: "2 of Spades", value: 2 },
-        
-        { name: "Ace of Clubs", value: 14 },
-        { name: "King of Clubs", value: 13 },
-        { name: "Queen of Clubs", value: 12 },
-        { name: "Jack of Clubs", value: 11 },
-        { name: "10 of Clubs", value: 10 },
-        { name: "9 of Clubs", value: 9 },
-        { name: "8 of Clubs", value: 8 },
-        { name: "7 of Clubs", value: 7 },
-        { name: "6 of Clubs", value: 6 },
-        { name: "5 of Clubs", value: 5 },
-        { name: "4 of Clubs", value: 4 },
-        { name: "3 of Clubs", value: 3 },
-        { name: "2 of Clubs", value: 2 }
-    ];
-    
+
+    let players = []
+
     //first shuffle
-    let shuffledCards = shuffleCards(cards);
+    let shuffledPositiveCards = shuffleCards(positiveCards);
+    let shuffledNegativeCards = shuffleCards(negativeCards);
 
     //instantiate draw cards
     let drawCards = [];
@@ -164,18 +131,22 @@ document.addEventListener("DOMContentLoaded", function () {
      * Call the Compare method when needed
      */
     function drawCard(){
-        const drawed = shuffledCards.pop();
+        if(playerOneDrawnCards.length == 2){
+            restartGame();
+        }
         
-        switch(drawCards.length){
+        switch(playerOneDrawnCards.length){
             case 0:
-                playerOnePick.textContent = drawed.name;
-                drawCards.push(drawed);
-
+                const positiveDrawn = shuffledPositiveCards.pop();
+                playerOneFirstPick.textContent = positiveDrawn.name;
+                playerOneDrawnCards.push(positiveDrawn);
+                //callback
+                drawCard();
                 break;
             case 1:
-                playerTwoPick.textContent = drawed.name;
-                drawCards.push(drawed);
-
+                const negativeDrawn = shuffledNegativeCards.pop();
+                playerOneSecondPick.textContent = negativeDrawn.name;
+                playerOneDrawnCards.push(negativeDrawn);
                 //call to compare now as the array will now be of the right length
                 compareCards();
                 break;
@@ -186,19 +157,20 @@ document.addEventListener("DOMContentLoaded", function () {
      * Compare cards and display winner
      */
     function compareCards(){
-        const firstCardValue = drawCards[0].value;
-        const secondCardValue = drawCards[1].value;
+        const firstCardValue = playerOneDrawnCards[0].value;
+        const secondCardValue = playerOneDrawnCards[1].value;
 
-        //if playerOne wins
-        if(firstCardValue > secondCardValue){
-            playerOneZone.style.backgroundColor = winnerColor;
-            playerTwoZone.style.backgroundColor = looserColor;  
+        const totalValue = firstCardValue + secondCardValue;
+        switch(totalValue){
+            case 0:
+                console.log(totalValue);
+                playerOneScore.textContent = "Sabacc !";
+                break;
+            default: 
+                console.log("not sabacc", totalValue);
+                playerOneScore.textContent = "Your score : " + totalValue
+                break;
         }
-        //if playerTwo wins
-        else if(firstCardValue < secondCardValue){
-            playerOneZone.style.backgroundColor = looserColor;
-            playerTwoZone.style.backgroundColor = winnerColor;
-        } 
     }
 
     /**
@@ -212,7 +184,8 @@ document.addEventListener("DOMContentLoaded", function () {
         drawCards = [];
 
         //shuffle the main pack again (user could have added some cards in it)
-        shuffledCards = shuffleCards(cards);
+        shuffledPositiveCards = shuffleCards(positiveCards);
+        shuffledNegativeCards = shuffleCards(negativeCards);
 
     }
 
